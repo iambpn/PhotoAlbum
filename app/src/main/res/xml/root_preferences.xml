@@ -1,0 +1,25 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/setting_header">
+
+        <Preference
+            app:key="privacyPolicy"
+            app:allowDividerAbove="true"
+            app:iconSpaceReserved="false"
+            app:order="1"
+            app:summary="@string/privacy_description"
+            app:title="@string/privacy_name" />
+
+        <SwitchPreferenceCompat
+            app:defaultValue="false"
+            app:iconSpaceReserved="false"
+            app:key="readDescription"
+            app:order="0"
+            app:summaryOff="@string/setting_off"
+            app:summaryOn="@string/setting_on"
+            app:title="@string/setting_name" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

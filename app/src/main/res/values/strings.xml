@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">PhotoAlbum</string>
+    <string name="open_drawer_string">Open Navigation Drawer</string>
+    <string name="close_drawer_string">Close Navigation Drawer</string>
+
+    <!--Settings-->
+    <string name="setting_header">Settings</string>
+    <string name="setting_off">Do not read description after processing.</string>
+    <string name="setting_on">Read description after processing is finished.</string>
+    <string name="setting_name">Read after processing</string>
+
+    <string name="privacy_description">Click to Read our Privacy Policy</string>
+    <string name="privacy_name">Privacy Policy</string>
+
+</resources>
