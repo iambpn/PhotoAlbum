@@ -8,7 +8,7 @@
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/accent</item>
         <item name="colorSecondaryVariant">@color/primary_light</item>
-        <item name="colorOnSecondary">@color/secondary_text</item>
+        <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?colorPrimary</item>
         <!-- Customize your theme here. -->

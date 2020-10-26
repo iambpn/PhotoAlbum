@@ -11,5 +11,6 @@
 
     <string name="privacy_description">Click to Read our Privacy Policy</string>
     <string name="privacy_name">Privacy Policy</string>
+    <string name="alt_text">Alt-Text</string>
 
 </resources>
