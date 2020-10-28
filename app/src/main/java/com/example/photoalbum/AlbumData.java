@@ -1,5 +1,9 @@
 package com.example.photoalbum;
 
+import android.net.Uri;
+
+import java.io.File;
+
 public class AlbumData {
     private String folderName;
     private String folderLocation;

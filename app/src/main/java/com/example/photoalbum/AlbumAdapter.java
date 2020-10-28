@@ -1,6 +1,11 @@
 package com.example.photoalbum;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,22 +13,32 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import org.w3c.dom.Text;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> {
 
     private ArrayList<AlbumData> albums;
     private Context context;
+    private ItemClicked itemClicked;
 
-    public AlbumAdapter(Context context, ArrayList<AlbumData> albums) {
+    public AlbumAdapter(Context context,AlbumFragment activity, ArrayList<AlbumData> albums) {
         this.albums = albums;
         this.context = context;
+        this.itemClicked = (ItemClicked) activity;
+    }
+
+    public interface ItemClicked{
+        void onItemClicked(int pos);
     }
 
     @NonNull
@@ -35,7 +50,13 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull AlbumAdapter.ViewHolder holder, int position) {
+        holder.itemView.setTag(albums.get(position));
+
         holder.albumName.setText(albums.get(position).getFolderName());
+        Glide.with(context)
+        .load(Uri.fromFile(new File(albums.get(position).getThumbnailImage())))
+        .centerCrop()
+        .into(holder.thumbnail);
     }
 
     @Override
@@ -43,14 +64,20 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
         return albums.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         TextView albumName;
         ImageView thumbnail;
+        LinearLayout album_item;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             albumName = itemView.findViewById(R.id.tv_album_name);
             thumbnail = itemView.findViewById(R.id.iv_album_thumbnail);
+            album_item = itemView.findViewById(R.id.ll_album_item);
+
+            album_item.setOnClickListener(v -> {
+                itemClicked.onItemClicked(albums.indexOf((AlbumData) itemView.getTag()));
+            });
         }
     }
 }

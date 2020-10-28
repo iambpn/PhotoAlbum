@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ll_album_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingVertical="10dp"
-    android:gravity="center_horizontal">
+    android:gravity="center_horizontal"
+    style="@style/ripple_border">
 
     <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:cardCornerRadius="10dp"
-        app:cardElevation="0dp"
-        app:cardUseCompatPadding="false">
+        app:cardElevation="3dp"
+        app:cardUseCompatPadding="false"
+        style="@style/Widget.MaterialComponents.CardView">
 
         <ImageView
             android:id="@+id/iv_album_thumbnail"
@@ -32,5 +35,5 @@
         android:maxLines="1"
         android:paddingHorizontal="7dp"
         android:text="text view"
-        android:textSize="19sp"/>
+        android:textSize="17sp"/>
 </LinearLayout>
