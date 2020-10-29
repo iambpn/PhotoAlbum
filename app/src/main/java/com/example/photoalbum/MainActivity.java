@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,8 +27,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AlbumFragment.GetData,
-        PhotosFragment.GetData {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AlbumFragment.GetSetData,
+        PhotosFragment.GetSetData {
 
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
@@ -35,20 +36,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private final int REQUEST_CODE = 29380; // this can be any number
 
     private ArrayList<String[]> imagePathWithDate;
-    private Set<String> uniquePaths;
+    private String[] uniquePaths;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        permissionManagement(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE});
         imagePathWithDate = new ArrayList<>();
-        uniquePaths = new HashSet<>();
-        getAllShownImagesPath(this);
 
         drawerLayout = findViewById(R.id.drawerLayout);
         navigationView = findViewById(R.id.nav_view);
+
+        permissionManagement(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE});
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); // show ham icon
         navigationView.setNavigationItemSelectedListener(this);
@@ -64,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) { // make ham icon show drawer
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) { // make ham icon work
         if (toggle.onOptionsItemSelected(item)) {
             return true;
         }
@@ -100,13 +99,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void permissionManagement(String[] permissions) {
-        // check if permission is granted or not
-        if (ContextCompat.checkSelfPermission(MainActivity.this, permissions[0]) != PackageManager.PERMISSION_GRANTED ) {
+        // check if permission is already granted or not
+        if (ContextCompat.checkSelfPermission(MainActivity.this, permissions[0]) != PackageManager.PERMISSION_GRANTED) {
             // if not granted then ask for permission
             ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE);
         } else {
             // if already granted
             Log.d("Permission", "permissionManagement: permission Granted");
+            // index image
+            getAllImagesPath(this);
         }
     }
 
@@ -116,6 +117,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (requestCode == REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) { // if permission granted
                 Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
+                //index image
+                getAllImagesPath(this);
+                // Call fragment
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AlbumFragment()).commit();
+                navigationView.setCheckedItem(R.id.nav_photo_album);
             } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) { // if permission denied
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])) { // if only denied
                     AlertDialog.Builder dialog = new AlertDialog.Builder(this);
@@ -145,15 +151,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dialog.show();
     }
 
-    private void getAllShownImagesPath(Activity activity) {
+    private void getAllImagesPath(Activity activity) {
         // ArrayList<String[]> imagesWithDate and
-        // Set<String> uniquePaths are Instance variable.
+        // String[] uniquePaths is Instance variable.
 
         Uri uri;
         Cursor cursor = null;
         int column_index_data, column_index_date_added;
         String absolutePathOfImage = null, dateAdded = null;
-        int i= 0;
+        int i = 0;
+        Set<String> uniquePaths = new HashSet<>();
 
         try {
             uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI; // location
@@ -175,6 +182,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 uniquePaths.add(imagePathWithDate.get(i)[0].substring(1, imagePathWithDate.get(i)[0].lastIndexOf('/')));
                 i++;
             }
+            this.uniquePaths = uniquePaths.toArray(new String[0]);
+            Arrays.sort(this.uniquePaths);
         } catch (Exception ex) {
             showErrorDialog(ex.getMessage());
             Log.d("ErrorHandled", "by getAllShownImagesPath");
@@ -188,14 +197,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public String[] getUniquePaths() {
-        return uniquePaths.toArray(new String[0]);
+        return uniquePaths;
     }
 
     @Override
-    public String getThumbnail(String folderPath,String folderName) {
-        for(String[] imagePathAndDate : imagePathWithDate){
-            if(imagePathAndDate[0].contains(folderPath)){
-                if(imagePathAndDate[0].split("/")[imagePathAndDate[0].split("/").length - 2].equals(folderName)){
+    public String getThumbnail(String folderPath, String folderName) {
+        for (String[] imagePathAndDate : imagePathWithDate) {
+            if (imagePathAndDate[0].contains(folderPath)) {
+                if (imagePathAndDate[0].split("/")[imagePathAndDate[0].split("/").length - 2].equals(folderName)) {
                     return imagePathAndDate[0];
                 }
             }
@@ -204,12 +213,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    public void onAlbumSelected(int pos) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, PhotosFragment.newInstance(uniquePaths[pos])) // passing argument using factory method of PhotoFragment.java
+                .addToBackStack("photos")
+                .commit();
+    }
+
+    @Override
     public ArrayList<String> getPhotosPathOfFolder(String folderPath) {
-        String folderName = folderPath.split("/")[folderPath.split("/").length-1];
+        String folderName = folderPath.split("/")[folderPath.split("/").length - 1];
         ArrayList<String> photosPath = new ArrayList<>();
-        for(String[] imagePathAndDate : imagePathWithDate){
-            if(imagePathAndDate[0].contains(folderPath)){
-                if(imagePathAndDate[0].split("/")[imagePathAndDate[0].split("/").length - 2].equals(folderName)){
+        for (String[] imagePathAndDate : imagePathWithDate) {
+            if (imagePathAndDate[0].contains(folderPath)) {
+                if (imagePathAndDate[0].split("/")[imagePathAndDate[0].split("/").length - 2].equals(folderName)) {
                     photosPath.add(imagePathAndDate[0]);
                 }
             }

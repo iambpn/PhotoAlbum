@@ -1,11 +1,7 @@
 package com.example.photoalbum;
 
-import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +11,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> {
@@ -31,20 +23,20 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
     private Context context;
     private ItemClicked itemClicked;
 
-    public AlbumAdapter(Context context,AlbumFragment activity, ArrayList<AlbumData> albums) {
+    public AlbumAdapter(Context context, AlbumFragment activity, ArrayList<AlbumData> albums) {
         this.albums = albums;
         this.context = context;
         this.itemClicked = (ItemClicked) activity;
     }
 
-    public interface ItemClicked{
+    public interface ItemClicked {
         void onItemClicked(int pos);
     }
 
     @NonNull
     @Override
     public AlbumAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.album_item,parent,false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.album_item, parent, false);
         return new ViewHolder(v);
     }
 
@@ -54,9 +46,9 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
 
         holder.albumName.setText(albums.get(position).getFolderName());
         Glide.with(context)
-        .load(Uri.fromFile(new File(albums.get(position).getThumbnailImage())))
-        .centerCrop()
-        .into(holder.thumbnail);
+                .load(Uri.fromFile(new File(albums.get(position).getThumbnailImage())))
+                .centerCrop()
+                .into(holder.thumbnail);
     }
 
     @Override

@@ -6,11 +6,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,17 +21,20 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.ItemClicked 
     private AlbumAdapter adapter;
     private RecyclerView recyclerView;
     private String[] uniquePaths;
-    private GetData getData;
+    private GetSetData getSetData;
 
-    public interface GetData{
+    public interface GetSetData {
         String[] getUniquePaths();
-        String getThumbnail(String folderPath,String folderName);
+
+        String getThumbnail(String folderPath, String folderName);
+
+        void onAlbumSelected(int pos);
     }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        getData = (MainActivity) context;
+        getSetData = (MainActivity) context;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.ItemClicked 
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_album, container, false);
     }
@@ -55,12 +55,11 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.ItemClicked 
         ArrayList<AlbumData> albums = new ArrayList<>();
         adapter = new AlbumAdapter(getContext(), this, albums);
         recyclerView = view.findViewById(R.id.rv_album_recycler_view);
-        uniquePaths = getData.getUniquePaths();
-        Arrays.sort(uniquePaths);
+        uniquePaths = getSetData.getUniquePaths();
         String[] pathSplit;
-        for(String path: uniquePaths) {
+        for (String path : uniquePaths) {
             pathSplit = path.split("/");
-            albums.add(new AlbumData(pathSplit[pathSplit.length-1],path,getData.getThumbnail(path,pathSplit[pathSplit.length-1])));
+            albums.add(new AlbumData(pathSplit[pathSplit.length - 1], path, getSetData.getThumbnail(path, pathSplit[pathSplit.length - 1])));
         }
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -74,15 +73,12 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.ItemClicked 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.app_name);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.app_name);
     }
 
     @Override
     public void onItemClicked(int pos) {
-        getParentFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container,new PhotosFragment(uniquePaths[pos]))
-                .addToBackStack("photos")
-                .commit();
+        getSetData.onAlbumSelected(pos);
     }
+
 }

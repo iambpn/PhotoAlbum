@@ -27,14 +27,14 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.ViewHolder
         this.itemClick = (ItemClick) activity;
     }
 
-    public interface ItemClick{
+    public interface ItemClick {
         void onItemClicked(int pos);
     }
 
     @NonNull
     @Override
     public PhotosAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.photos_item,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.photos_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -60,7 +60,6 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.ViewHolder
             super(itemView);
             thumbnail = itemView.findViewById(R.id.iv_photo_thumbnail);
             thumbnail_cardView = itemView.findViewById(R.id.cv_photos_card_view);
-
             thumbnail_cardView.setOnClickListener(v -> {
                 itemClick.onItemClicked(photos.indexOf((PhotoData) itemView.getTag()));
             });

@@ -12,9 +12,10 @@
         android:id="@+id/cv_photos_card_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:cardElevation="3dp"
+        app:cardElevation="4dp"
         app:cardUseCompatPadding="false"
-        style="@style/Widget.MaterialComponents.CardView">
+        style="@style/Widget.MaterialComponents.CardView"
+        android:foreground="?attr/selectableItemBackground">
 
         <ImageView
             android:id="@+id/iv_photo_thumbnail"
