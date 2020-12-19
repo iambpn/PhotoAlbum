@@ -8,7 +8,7 @@
             app:key="privacyPolicy"
             app:allowDividerAbove="true"
             app:iconSpaceReserved="false"
-            app:order="1"
+            app:order="2"
             app:summary="@string/privacy_description"
             app:title="@string/privacy_name" />
 
@@ -16,10 +16,20 @@
             app:defaultValue="false"
             app:iconSpaceReserved="false"
             app:key="readDescription"
-            app:order="0"
+            app:order="1"
             app:summaryOff="@string/setting_off"
             app:summaryOn="@string/setting_on"
             app:title="@string/setting_name" />
+        <EditTextPreference
+            app:defaultValue="https://127.0.0.1"
+            app:iconSpaceReserved="false"
+            app:order="0"
+            app:key="serverUrl"
+            app:title="Change Server URL"
+            app:dialogMessage="Leave field empty for default Server."
+            app:enableCopying="false"
+            app:useSimpleSummaryProvider="true"
+            />
     </PreferenceCategory>
 
 </PreferenceScreen>
