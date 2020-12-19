@@ -27,6 +27,9 @@ public class PhotosFragment extends Fragment implements PhotosAdapter.ItemClick 
     private PhotosAdapter adapter;
     private RecyclerView recyclerView;
 
+    
+    // factory method to generate new instance of Photo Fragment with photo loaded.
+    // this has to be done because one fragment cannot communicate directly with another fragment.
     public static PhotosFragment newInstance(String folderPath) { // Factory Method
         Bundle args = new Bundle();
         args.putString(FOLDER_PATH, folderPath); // set key and argument value

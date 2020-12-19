@@ -26,6 +26,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AlbumFragment.GetSetData,
         PhotosFragment.GetSetData {
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private ArrayList<String[]> imagePathWithDate;
     private String[] uniquePaths;
+    private MenuItem previousPositionOnNavigationDrawer = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         drawerLayout = findViewById(R.id.drawerLayout);
         navigationView = findViewById(R.id.nav_view);
+
+        //initialize uniquePaths.
+        uniquePaths = new String[0];
 
         permissionManagement(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE});
 
@@ -59,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (savedInstanceState == null) { // to prevent calling this code if app is already loaded.
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AlbumFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_photo_album);
+            previousPositionOnNavigationDrawer = navigationView.getCheckedItem();
         }
     }
 
@@ -72,10 +78,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
-
+        Log.d("TAG", "count : "+getSupportFragmentManager().getBackStackEntryCount());
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
+        }
+        else if(getSupportFragmentManager().getBackStackEntryCount() > 0){
+            navigationView.setCheckedItem(previousPositionOnNavigationDrawer);
+            super.onBackPressed();
+        }
+        else {
             super.onBackPressed();
         }
     }
@@ -85,10 +96,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_settings:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SettingsFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SettingsFragment()).addToBackStack("Settings frag").commit();
+                previousPositionOnNavigationDrawer = navigationView.getCheckedItem();
                 break;
             case R.id.nav_photo_album:
+                clearFragmentBackStack();
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AlbumFragment()).commit();
+                previousPositionOnNavigationDrawer = navigationView.getCheckedItem();
                 break;
             case R.id.nav_shareApp:
                 Toast.makeText(this, "Share is not available", Toast.LENGTH_SHORT).show();
@@ -96,6 +110,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    // clears the fragment back stack
+    public void clearFragmentBackStack() {
+        FragmentManager.BackStackEntry entry = getSupportFragmentManager().getBackStackEntryAt(
+                0);
+        getSupportFragmentManager().popBackStack(entry.getId(),
+                FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        getSupportFragmentManager().executePendingTransactions();
+
     }
 
     private void permissionManagement(String[] permissions) {
@@ -212,6 +236,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return "none";
     }
 
+    // this is to change the fragment when clicking on album
     @Override
     public void onAlbumSelected(int pos) {
         getSupportFragmentManager()

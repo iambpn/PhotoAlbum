@@ -3,6 +3,7 @@ package com.example.photoalbum;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.ItemClicked 
     private String[] uniquePaths;
     private GetSetData getSetData;
 
+    // this interface is needed inorder to get and set data with its MainActivity
     public interface GetSetData {
         String[] getUniquePaths();
 
