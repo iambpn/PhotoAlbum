@@ -13,4 +13,8 @@
     <string name="privacy_name">Privacy Policy</string>
     <string name="alt_text">Alt-Text</string>
 
+
+    <string name="processing">Processing...</string>
+    <string name="result">Result Text</string>
+
 </resources>
