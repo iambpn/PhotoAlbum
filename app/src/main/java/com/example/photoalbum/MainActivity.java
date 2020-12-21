@@ -28,8 +28,8 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AlbumFragment.GetSetData,
-        PhotosFragment.GetSetData {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AlbumFragment.Communicate,
+        PhotosFragment.Communicate {
 
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private final int REQUEST_CODE = 29380; // this can be any number
 
     private ArrayList<String[]> imagePathWithDate;
-    private String[] uniquePaths;
+    private String[] uniquePaths; // or folder paths
     private MenuItem previousPositionOnNavigationDrawer = null;
 
     @Override
@@ -78,11 +78,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
-        Log.d("TAG", "count : "+getSupportFragmentManager().getBackStackEntryCount());
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         }
-        else if(getSupportFragmentManager().getBackStackEntryCount() > 0){
+        else if(getSupportFragmentManager().getBackStackEntryCount() > 0 && previousPositionOnNavigationDrawer!=null){
             navigationView.setCheckedItem(previousPositionOnNavigationDrawer);
             super.onBackPressed();
         }
@@ -114,12 +113,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // clears the fragment back stack
     public void clearFragmentBackStack() {
-        FragmentManager.BackStackEntry entry = getSupportFragmentManager().getBackStackEntryAt(
-                0);
-        getSupportFragmentManager().popBackStack(entry.getId(),
-                FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        getSupportFragmentManager().executePendingTransactions();
-
+        if(getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            FragmentManager.BackStackEntry entry = getSupportFragmentManager().getBackStackEntryAt(
+                    0);
+            getSupportFragmentManager().popBackStack(entry.getId(),
+                    FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            getSupportFragmentManager().executePendingTransactions();
+        }
     }
 
     private void permissionManagement(String[] permissions) {
@@ -175,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dialog.show();
     }
 
+    // get all image path from media store
     private void getAllImagesPath(Activity activity) {
         // ArrayList<String[]> imagesWithDate and
         // String[] uniquePaths is Instance variable.
@@ -184,13 +185,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int column_index_data, column_index_date_added;
         String absolutePathOfImage = null, dateAdded = null;
         int i = 0;
-        Set<String> uniquePaths = new HashSet<>();
+        Set<String> uniquePaths = new HashSet<>(); // set is used because set cannot store duplicate content
 
         try {
             uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI; // location
 
             String[] projection = {MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_ADDED}; // which column to select from db
 
+            // importing data from media store
             // Selection means where clause and selection args means argument to selection string.
             cursor = activity.getContentResolver().query(uri, projection, null,
                     null, MediaStore.Images.Media.DATE_ADDED + " DESC");  // sort order means order by
@@ -247,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public ArrayList<String> getPhotosPathOfFolder(String folderPath) {
+    public ArrayList<String> getPathOfPhotos(String folderPath) {
         String folderName = folderPath.split("/")[folderPath.split("/").length - 1];
         ArrayList<String> photosPath = new ArrayList<>();
         for (String[] imagePathAndDate : imagePathWithDate) {
@@ -258,5 +260,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
         return photosPath;
+    }
+
+    @Override
+    public void onPhotoSelected(int pos,PhotoData selectedPhoto) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, ProcessingFragment.newInstance(selectedPhoto)) // passing argument using factory method of processingFragment.java
+                .addToBackStack("Processing")
+                .commit();
     }
 }

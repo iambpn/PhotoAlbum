@@ -2,6 +2,7 @@ package com.example.photoalbum;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,10 +42,10 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull PhotosAdapter.ViewHolder holder, int position) {
         holder.itemView.setTag(photos.get(position));
-        Glide.with(context)
+        Glide.with(context) //Using glide dependency to generate thumbnails
                 .load(Uri.fromFile(new File(photos.get(position).getPhotoLocation())))
                 .centerCrop()
-                .into(holder.thumbnail);
+                .into(holder.thumbnail); // show the image to passed variable
     }
 
     @Override

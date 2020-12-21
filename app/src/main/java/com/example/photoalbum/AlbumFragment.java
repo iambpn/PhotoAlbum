@@ -3,7 +3,6 @@ package com.example.photoalbum;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +21,10 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.ItemClicked 
     private AlbumAdapter adapter;
     private RecyclerView recyclerView;
     private String[] uniquePaths;
-    private GetSetData getSetData;
+    private Communicate communicateWithMainActivity;
 
-    // this interface is needed inorder to get and set data with its MainActivity
-    public interface GetSetData {
+    // this interface is needed inorder to communicate wit its implementer
+    public interface Communicate {
         String[] getUniquePaths();
 
         String getThumbnail(String folderPath, String folderName);
@@ -36,7 +35,7 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.ItemClicked 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        getSetData = (MainActivity) context;
+        communicateWithMainActivity = (MainActivity) context;
     }
 
     @Override
@@ -57,11 +56,11 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.ItemClicked 
         ArrayList<AlbumData> albums = new ArrayList<>();
         adapter = new AlbumAdapter(getContext(), this, albums);
         recyclerView = view.findViewById(R.id.rv_album_recycler_view);
-        uniquePaths = getSetData.getUniquePaths();
+        uniquePaths = communicateWithMainActivity.getUniquePaths();
         String[] pathSplit;
         for (String path : uniquePaths) {
             pathSplit = path.split("/");
-            albums.add(new AlbumData(pathSplit[pathSplit.length - 1], path, getSetData.getThumbnail(path, pathSplit[pathSplit.length - 1])));
+            albums.add(new AlbumData(pathSplit[pathSplit.length - 1], path, communicateWithMainActivity.getThumbnail(path, pathSplit[pathSplit.length - 1])));
         }
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -80,7 +79,7 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.ItemClicked 
 
     @Override
     public void onItemClicked(int pos) {
-        getSetData.onAlbumSelected(pos);
+        communicateWithMainActivity.onAlbumSelected(pos);
     }
 
 }

@@ -3,10 +3,10 @@ package com.example.photoalbum;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -21,12 +21,20 @@ public class PhotosFragment extends Fragment implements PhotosAdapter.ItemClick 
     private static final String FOLDER_PATH = "folderPath";
 
     private String folderPath;
-    private GetSetData getSetData;
+    private Communicate communicateWithMainActivity;
     private ArrayList<String> photosPath;
     private ArrayList<PhotoData> photosObject;
     private PhotosAdapter adapter;
     private RecyclerView recyclerView;
 
+    public interface Communicate {
+        ArrayList<String> getPathOfPhotos(String folderPath);
+        void onPhotoSelected(int pos,PhotoData selectedPhoto);
+    }
+
+    public PhotosFragment() {
+        // Required empty public constructor
+    }
     
     // factory method to generate new instance of Photo Fragment with photo loaded.
     // this has to be done because one fragment cannot communicate directly with another fragment.
@@ -39,14 +47,10 @@ public class PhotosFragment extends Fragment implements PhotosAdapter.ItemClick 
         return fragment;
     }
 
-    public interface GetSetData {
-        ArrayList<String> getPhotosPathOfFolder(String folderPath);
-    }
-
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        this.getSetData = (MainActivity) context;
+        this.communicateWithMainActivity = (MainActivity) context;
     }
 
     @Override
@@ -64,7 +68,7 @@ public class PhotosFragment extends Fragment implements PhotosAdapter.ItemClick 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         folderPath = getArguments().getString(FOLDER_PATH); // getting value from bundle
-        photosPath = getSetData.getPhotosPathOfFolder(folderPath); // call to MainActivity
+        photosPath = communicateWithMainActivity.getPathOfPhotos(folderPath); // call to MainActivity
 
         photosObject = new ArrayList<>();
         adapter = new PhotosAdapter(getContext(), this, photosObject);
@@ -92,6 +96,6 @@ public class PhotosFragment extends Fragment implements PhotosAdapter.ItemClick 
 
     @Override
     public void onItemClicked(int pos) {
-        Toast.makeText(getContext(), "This feature is not available." + pos, Toast.LENGTH_SHORT).show();
+        communicateWithMainActivity.onPhotoSelected(pos,photosObject.get(pos));
     }
 }
