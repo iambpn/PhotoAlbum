@@ -5,9 +5,13 @@
 
     <!--Settings-->
     <string name="setting_header">Settings</string>
-    <string name="setting_off">Do not read description after processing.</string>
-    <string name="setting_on">Read description after processing is finished.</string>
-    <string name="setting_name">Read after processing</string>
+    <string name="read_description_off">Do not read description after processing.</string>
+    <string name="read_description_on">Read description after processing is finished.</string>
+    <string name="read_description_name">Read after processing</string>
+
+    <string name="generate_description_off">Do not generate description</string>
+    <string name="generate_description_on">Generate description when selecting image</string>
+    <string name="generate_description_name">Generate Description</string>
 
     <string name="privacy_description">Click to Read our Privacy Policy</string>
     <string name="privacy_name">Privacy Policy</string>

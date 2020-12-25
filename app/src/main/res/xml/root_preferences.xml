@@ -8,18 +8,26 @@
             app:key="privacyPolicy"
             app:allowDividerAbove="true"
             app:iconSpaceReserved="false"
-            app:order="2"
+            app:order="3"
             app:summary="@string/privacy_description"
             app:title="@string/privacy_name" />
 
         <SwitchPreferenceCompat
-            app:defaultValue="false"
+            app:defaultValue="true"
             app:iconSpaceReserved="false"
             app:key="readDescription"
+            app:order="2"
+            app:summaryOff="@string/read_description_off"
+            app:summaryOn="@string/read_description_on"
+            app:title="@string/read_description_name" />
+        <SwitchPreferenceCompat
+            app:defaultValue="true"
+            app:iconSpaceReserved="false"
+            app:key="description"
             app:order="1"
-            app:summaryOff="@string/setting_off"
-            app:summaryOn="@string/setting_on"
-            app:title="@string/setting_name" />
+            app:summaryOff="@string/generate_description_off"
+            app:summaryOn="@string/generate_description_on"
+            app:title="@string/generate_description_name" />
         <EditTextPreference
             app:defaultValue="https://127.0.0.1"
             app:iconSpaceReserved="false"
@@ -27,7 +35,6 @@
             app:key="serverUrl"
             app:title="Change Server URL"
             app:dialogMessage="Leave field empty for default Server."
-            app:enableCopying="false"
             app:useSimpleSummaryProvider="true"
             />
     </PreferenceCategory>

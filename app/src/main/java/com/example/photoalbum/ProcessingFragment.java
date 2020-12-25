@@ -1,19 +1,23 @@
 package com.example.photoalbum;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.preference.SwitchPreferenceCompat;
 
 public class ProcessingFragment extends Fragment {
 
@@ -62,6 +66,14 @@ public class ProcessingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ImageView imagePreview = view.findViewById(R.id.iv_image_preview);
+        RelativeLayout rlResultLayout = view.findViewById(R.id.rl_result_layout);
+        SharedPreferences preferences = ((MainActivity)getContext()).getSettingsSharedPreference();
+
+        // if generate description is false in settings
+        if(!preferences.getBoolean(SettingsFragment.GENERATE_DESCRIPTION_KEY, SettingsFragment.DEFAULT_GENERATE_DESCRIPTION)){
+            rlResultLayout.setVisibility(View.GONE);
+        }
+
         Picasso.get().load(new File(this.photoLocation)).into(imagePreview); // using Picasso dependency to view image
     }
 

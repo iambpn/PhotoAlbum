@@ -2,6 +2,7 @@ package com.example.photoalbum;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -27,6 +28,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
+import androidx.preference.PreferenceManager;
+import androidx.preference.SwitchPreferenceCompat;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AlbumFragment.Communicate,
         PhotosFragment.Communicate {
@@ -39,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ArrayList<String[]> imagePathWithDate;
     private String[] uniquePaths; // or folder paths
     private MenuItem previousPositionOnNavigationDrawer = null;
+
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +71,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             navigationView.setCheckedItem(R.id.nav_photo_album);
             previousPositionOnNavigationDrawer = navigationView.getCheckedItem();
         }
+
+        //load settings Fragments shared preferences
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
     @Override
@@ -101,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_photo_album:
                 clearFragmentBackStack();
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AlbumFragment()).commit();
-                previousPositionOnNavigationDrawer = navigationView.getCheckedItem();
+                previousPositionOnNavigationDrawer = navigationView.getMenu().findItem(R.id.nav_photo_album);
                 break;
             case R.id.nav_shareApp:
                 Toast.makeText(this, "Share is not available", Toast.LENGTH_SHORT).show();
@@ -269,5 +277,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .replace(R.id.fragment_container, ProcessingFragment.newInstance(selectedPhoto)) // passing argument using factory method of processingFragment.java
                 .addToBackStack("Processing")
                 .commit();
+    }
+
+    public SharedPreferences getSettingsSharedPreference(){
+        return preferences;
     }
 }
