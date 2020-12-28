@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -17,6 +18,7 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import androidx.annotation.NonNull;
@@ -29,7 +31,6 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
-import androidx.preference.SwitchPreferenceCompat;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AlbumFragment.Communicate,
         PhotosFragment.Communicate {
@@ -39,11 +40,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView navigationView;
     private final int REQUEST_CODE = 29380; // this can be any number
 
-    private ArrayList<String[]> imagePathWithDate;
-    private String[] uniquePaths; // or folder paths
+    private ArrayList<String[]> imagePathWithDate; // path is in URI format image path is a absolute path start from /
+    private String[] uniquePaths; // or folder paths, folder path is a absolute path
     private MenuItem previousPositionOnNavigationDrawer = null;
 
     private SharedPreferences preferences;
+    private TextToSpeech tts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +76,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //load settings Fragments shared preferences
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // set up text to speech
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    int result = tts.setLanguage(Locale.UK);
+                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        Log.e("Text to speech", "Language not supported");
+                    } else {
+                        // trigger any thing after tts have been set up
+                        if (tts.isSpeaking()) {
+                            tts.stop();
+                        }
+                    }
+                } else {
+                    Log.e("Text to speech", "onInit: Failed");
+                }
+            }
+        });
     }
 
     @Override
@@ -88,12 +110,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-        }
-        else if(getSupportFragmentManager().getBackStackEntryCount() > 0 && previousPositionOnNavigationDrawer!=null){
+        } else if (getSupportFragmentManager().getBackStackEntryCount() > 0 && previousPositionOnNavigationDrawer != null) {
             navigationView.setCheckedItem(previousPositionOnNavigationDrawer);
             super.onBackPressed();
-        }
-        else {
+        } else {
             super.onBackPressed();
         }
     }
@@ -121,11 +141,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // clears the fragment back stack
     public void clearFragmentBackStack() {
-        if(getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            FragmentManager.BackStackEntry entry = getSupportFragmentManager().getBackStackEntryAt(
-                    0);
-            getSupportFragmentManager().popBackStack(entry.getId(),
-                    FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            FragmentManager.BackStackEntry entry = getSupportFragmentManager().getBackStackEntryAt(0);
+            getSupportFragmentManager().popBackStack(entry.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
             getSupportFragmentManager().executePendingTransactions();
         }
     }
@@ -220,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Arrays.sort(this.uniquePaths);
         } catch (Exception ex) {
             showErrorDialog(ex.getMessage());
-            Log.d("ErrorHandled", "by getAllShownImagesPath");
+            Log.e("ErrorHandled", "by getAllShownImagesPath");
             ex.printStackTrace();
         } finally {
             if (cursor != null) {
@@ -271,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void onPhotoSelected(int pos,PhotoData selectedPhoto) {
+    public void onPhotoSelected(int pos, PhotoData selectedPhoto) {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, ProcessingFragment.newInstance(selectedPhoto)) // passing argument using factory method of processingFragment.java
@@ -279,7 +297,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .commit();
     }
 
-    public SharedPreferences getSettingsSharedPreference(){
+    public SharedPreferences getSettingsSharedPreference() {
         return preferences;
+    }
+
+    public TextToSpeech getTextToSpeech() {
+        return tts;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        tts.shutdown();
     }
 }
