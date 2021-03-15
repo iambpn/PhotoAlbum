@@ -101,6 +101,7 @@ public class ProcessingFragment extends Fragment {
         // if generate description is false in settings then do not display description
         if (!preferences.getBoolean(SettingsFragment.GENERATE_DESCRIPTION_KEY, SettingsFragment.DEFAULT_GENERATE_DESCRIPTION)) {
             rlResultLayout.setVisibility(View.GONE);
+            Picasso.get().load(new File(this.photoLocation)).into(imagePreview); // using Picasso dependency to view image
         }
 		else{
 
