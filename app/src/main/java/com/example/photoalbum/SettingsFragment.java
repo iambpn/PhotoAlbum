@@ -18,7 +18,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private Preference privacyPolicy;
     private EditTextPreference serverURL;
 
-    public static final String DEFAULT_SERVER_URL = "https://127.0.0.1";
+    public static final String DEFAULT_SERVER_URL = "http://192.168.100.189:5000/get-prediction";
     public static final boolean DEFAULT_GENERATE_DESCRIPTION = true;
     public static final boolean DEFAULT_READ_DESCRIPTION = true;
     public static final String SERVER_URL_KEY = "serverUrl";

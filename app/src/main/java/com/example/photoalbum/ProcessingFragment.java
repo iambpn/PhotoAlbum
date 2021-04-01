@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
@@ -26,6 +27,8 @@ import com.squareup.picasso.Picasso;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -110,50 +113,38 @@ public class ProcessingFragment extends Fragment {
 			// request queue to server
 			requestQueue = Volley.newRequestQueue((MainActivity) getContext()); // using volley dependency to send request to server
 
-	// ------------- to do --------------------------
-	//          // uncomment this after server is setup
-	//        String server_Url = preferences.getString(SettingsFragment.SERVER_URL_KEY,SettingsFragment.DEFAULT_SERVER_URL);
-	//        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_Url,
-	//                this::showResponse, // method reference to showResponse
-	//                error -> {
-	//                    // if error while sending request
-	//                    showResponse("Request to Server Failed. \nPlease check your connections");
-	//                    Log.e("Volley error", "onErrorResponse: Please check your connections", error.getCause());
-	//                }
-	//        ) {
-	//            @Override
-	//            protected Map<String, String> getParams() throws AuthFailureError {
-	//                // send params to server
-	//                Map<String, String> params = new HashMap<>();
-	//
-	//                //generate unique file name
-	//                // .jpg is added because image is converted to jpeg in getByteEncodedString function;
-	//                String fileName = System.currentTimeMillis() + ".jpg";
-	//                String data = getByteEncodedString(photoLocation);
-	//                if (data == Encoding_Error) {
-	//                    // error in encoding so do not send new params
-	//                    return super.getParams();
-	//                }
-	//                params.put("encodedImage", data);
-	//                return params;
-	//            }
-	//        };
+            // checking if user has already added his own server. if not then get default server
+	        String server_Url = preferences.getString(SettingsFragment.SERVER_URL_KEY,SettingsFragment.DEFAULT_SERVER_URL);
 
-	// ----------------for testing only --------------------
-			String server_Url = "https://jsonplaceholder.typicode.com/todos/1";
-			StringRequest stringRequest = new StringRequest(Request.Method.GET, server_Url,
-					this::showResponse, // method reference to showResponse
-					error -> {
-						showResponse("Request to Server Failed. \nPlease check your connections");
-						Log.e("Volley error", "onErrorResponse: Please check your connections", error.getCause());
-					}
-			);
+	        // create a string request
+	        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_Url,
+	                this::showResponse, // method reference to showResponse. show response will call if request is successful
+	                error -> {
+	                    // if error while sending request
+	                    showResponse("Request to Server Failed. \nPlease check your connections");
+	                    Log.e("Volley error", "onErrorResponse: Please check your connections", error.getCause());
+	                }
+	            ) {
+	            @Override
+	            protected Map<String, String> getParams() throws AuthFailureError {
+	                // send params to server
+	                Map<String, String> params = new HashMap<>();
+
+	                String data = getByteEncodedString(photoLocation);
+	                if (data == Encoding_Error) {
+	                    // error in encoding so do not send new params
+	                    return super.getParams();
+	                }
+	                params.put("encodedImage", data); // .put(Name, data)
+	                return params;
+	            }
+	        };
 
 			stringRequest.setTag("description"); // add tag to stringRequest
 			stringRequest.setShouldCache(false); // set cache to false
 			requestQueue.add(stringRequest); // add stringRequest to false
 
-			// speak text when Image button is pressed
+			// speak text when Image_button is pressed
 			ibPlayText.setOnClickListener(v -> {
 				tts.speak(resultText, TextToSpeech.QUEUE_FLUSH, null, null);
 			});
@@ -183,7 +174,7 @@ public class ProcessingFragment extends Fragment {
             // encoding bitmap image to string
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-            byte[] imageBytes = byteArrayOutputStream.toByteArray();
+            byte[] imageBytes = byteArrayOutputStream.toByteArray(); // converting output stream to byte array
             return android.util.Base64.encodeToString(imageBytes, Base64.DEFAULT);
         } catch (Exception ex) {
             Log.e("ImageEncoding", "getByteEncodedString: " + ex.getMessage(), ex);
