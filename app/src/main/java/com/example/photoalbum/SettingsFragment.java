@@ -39,7 +39,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
          *
          * Use of this function: This function is used as the default value setter for serverUrl Filed.
          */
-        serverURL.getSharedPreferences().registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+        /*serverURL.getSharedPreferences().registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                 if (key.equals(SERVER_URL_KEY)) {
@@ -48,7 +48,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     }
                 }
             }
-        });
+        });*/
 
         /*
         * This setOnPreferenceChangeListener is called before updating the shared preference field so any changed made in setOnPreferenceChangeListener
