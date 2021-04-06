@@ -29,12 +29,12 @@
             app:summaryOn="@string/generate_description_on"
             app:title="@string/generate_description_name" />
         <EditTextPreference
-            app:defaultValue="https://127.0.0.1"
+            app:defaultValue=""
             app:iconSpaceReserved="false"
             app:order="0"
             app:key="serverUrl"
             app:title="Change Server URL"
-            app:dialogMessage="Leave field empty for default Server."
+            app:dialogMessage="Value must start with http://..\nLeave field empty for default Server."
             app:useSimpleSummaryProvider="true"
             />
     </PreferenceCategory>

@@ -34,27 +34,34 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         privacyPolicy = findPreference(PRIVACY_POLICY_KEY);
         serverURL = findPreference(SERVER_URL_KEY);
 
-        // shared preference onchange is called ehn shared preference is updated
-        // is used as the default checker
+        /*
+         * This registerOnSharedPreferenceChangeListener is called after any shared preference element is updated.
+         *
+         * Use of this function: This function is used as the default value setter for serverUrl Filed.
+         */
         serverURL.getSharedPreferences().registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                if(key.equals(SERVER_URL_KEY)){
-                    if(sharedPreferences.getString(key,DEFAULT_SERVER_URL).equals("")) {
+                if (key.equals(SERVER_URL_KEY)) {
+                    if (sharedPreferences.getString(key, DEFAULT_SERVER_URL).equals("")) {
                         serverURL.setText(DEFAULT_SERVER_URL);
                     }
                 }
             }
         });
 
-        // on preference change is called when before updating the shared preference so any changed made from this
-        // to the same element in shared preference will be replaced. this is used to validate the data.
-        // if the daa is valid then only shared preference change is called
-        serverURL.setOnPreferenceChangeListener((preference, newValue) -> {
-            if(!newValue.equals("")){
-                return URLUtil.isHttpsUrl(newValue.toString());
+        /*
+        * This setOnPreferenceChangeListener is called before updating the shared preference field so any changed made in setOnPreferenceChangeListener
+            to the same element in shared preference will be replaced with setOnPreferenceChangeListener data.
+        * Since, the change made to element from this function is overwritten by this function it is suitable to use this function as validator function.
+        *
+        * Use of this Function:  If the data is valid then only onSharedPreferenceChanged is called.
+        */
+        serverURL.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                return newValue.equals("") || URLUtil.isHttpUrl(newValue.toString()) || URLUtil.isHttpsUrl(newValue.toString());
             }
-            return true;
         });
 
         try {

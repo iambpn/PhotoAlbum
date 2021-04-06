@@ -115,6 +115,7 @@ public class ProcessingFragment extends Fragment {
 
             // checking if user has already added his own server. if not then get default server
 	        String server_Url = preferences.getString(SettingsFragment.SERVER_URL_KEY,SettingsFragment.DEFAULT_SERVER_URL);
+	        server_Url = server_Url.equals("") ? SettingsFragment.DEFAULT_SERVER_URL : server_Url;
 
 	        // create a string request
 	        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_Url,
@@ -131,7 +132,7 @@ public class ProcessingFragment extends Fragment {
 	                Map<String, String> params = new HashMap<>();
 
 	                String data = getByteEncodedString(photoLocation);
-	                if (data == Encoding_Error) {
+	                if (data.equals(Encoding_Error)) {
 	                    // error in encoding so do not send new params
 	                    return super.getParams();
 	                }
