@@ -2,6 +2,7 @@ package com.example.photoalbum;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -12,14 +13,6 @@ import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
-
-import com.google.android.material.navigation.NavigationView;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -32,14 +25,21 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
 
+import com.google.android.material.navigation.NavigationView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AlbumFragment.Communicate,
         PhotosFragment.Communicate {
 
+    private final int REQUEST_CODE = 29380; // this can be any number
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
-    private final int REQUEST_CODE = 29380; // this can be any number
-
     private ArrayList<String[]> imagePathWithDate; // path is in URI format image path is a absolute path start from /
     private String[] uniquePaths; // or folder paths, folder path is a absolute path
     private MenuItem previousPositionOnNavigationDrawer = null;
@@ -132,7 +132,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 previousPositionOnNavigationDrawer = navigationView.getMenu().findItem(R.id.nav_photo_album);
                 break;
             case R.id.nav_shareApp:
-                Toast.makeText(this, "Share is not available", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Share Application", Toast.LENGTH_SHORT).show();
+                // Intent to open download app page to share app
+                Intent shareApp = new Intent(Intent.ACTION_VIEW);
+                shareApp.setData(Uri.parse("https://github.com/iambpn/PhotoAlbum"));
+                startActivity(shareApp);
                 break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -212,6 +216,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String absolutePathOfImage = null, dateAdded = null;
         int i = 0;
         Set<String> uniquePaths = new HashSet<>(); // set is used because set cannot store duplicate content
+        this.imagePathWithDate = new ArrayList<>();
 
         try {
             uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI; // location
@@ -249,6 +254,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public String[] getUniquePaths() {
+        // re-indexing every time unique paths/ album fragment is launched
+        getAllImagesPath(this);
         return uniquePaths;
     }
 

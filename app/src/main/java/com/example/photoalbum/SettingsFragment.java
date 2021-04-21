@@ -1,22 +1,18 @@
 package com.example.photoalbum;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.URLUtil;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.SwitchPreferenceCompat;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
-
-    private Preference privacyPolicy;
-    private EditTextPreference serverURL;
 
     public static final String DEFAULT_SERVER_URL = "http://192.168.100.189:5000/get-prediction";
     public static final boolean DEFAULT_GENERATE_DESCRIPTION = true;
@@ -25,7 +21,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public static final String READ_DESCRIPTION_KEY = "readDescription";
     public static final String GENERATE_DESCRIPTION_KEY = "description";
     public static final String PRIVACY_POLICY_KEY = "privacyPolicy";
-
+    private Preference privacyPolicy;
+    private EditTextPreference serverURL;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -35,22 +32,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         serverURL = findPreference(SERVER_URL_KEY);
 
         /*
-         * This registerOnSharedPreferenceChangeListener is called after any shared preference element is updated.
-         *
-         * Use of this function: This function is used as the default value setter for serverUrl Filed.
-         */
-        /*serverURL.getSharedPreferences().registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
-            @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                if (key.equals(SERVER_URL_KEY)) {
-                    if (sharedPreferences.getString(key, DEFAULT_SERVER_URL).equals("")) {
-                        serverURL.setText(DEFAULT_SERVER_URL);
-                    }
-                }
-            }
-        });*/
-
-        /*
+        * This registerOnSharedPreferenceChangeListener is called after any shared preference element is updated.
+        * Use of this function: This function is used as the default value setter for serverUrl Filed.
+        * eg: serverURL.getSharedPreferences().registerOnSharedPreferenceChangeListener()
+        *
+        *
         * This setOnPreferenceChangeListener is called before updating the shared preference field so any changed made in setOnPreferenceChangeListener
             to the same element in shared preference will be replaced with setOnPreferenceChangeListener data.
         * Since, the change made to element from this function is overwritten by this function it is suitable to use this function as validator function.
@@ -67,13 +53,20 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         try {
             if (privacyPolicy != null) {
                 privacyPolicy.setOnPreferenceClickListener(preference -> {
-                    Toast.makeText(getContext(), "Privacy policy is not yet available.", Toast.LENGTH_SHORT).show();
+                    // show privacy policy dialog
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+                    dialog.setTitle("Privacy Policy");
+                    dialog.setMessage("Information ......");
+                    dialog.setCancelable(true);
+                    dialog.setNegativeButton("Ok", null);
+                    dialog.show();
                     return true;
                 });
             } else {
                 throw new Exception("Settings not found");
             }
         } catch (Exception ex) {
+            Log.e("Settings", "onCreatePreferences: " + ex.getMessage(), ex);
             Toast.makeText(getContext(), "Error:" + ex.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }

@@ -17,6 +17,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -29,11 +34,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 public class ProcessingFragment extends Fragment {
 
@@ -105,51 +105,50 @@ public class ProcessingFragment extends Fragment {
         if (!preferences.getBoolean(SettingsFragment.GENERATE_DESCRIPTION_KEY, SettingsFragment.DEFAULT_GENERATE_DESCRIPTION)) {
             rlResultLayout.setVisibility(View.GONE);
             Picasso.get().load(new File(this.photoLocation)).into(imagePreview); // using Picasso dependency to view image
-        }
-		else{
+        } else {
 
-			Picasso.get().load(new File(this.photoLocation)).into(imagePreview); // using Picasso dependency to view image
+            Picasso.get().load(new File(this.photoLocation)).into(imagePreview); // using Picasso dependency to view image
 
-			// request queue to server
-			requestQueue = Volley.newRequestQueue((MainActivity) getContext()); // using volley dependency to send request to server
+            // request queue to server
+            requestQueue = Volley.newRequestQueue((MainActivity) getContext()); // using volley dependency to send request to server
 
             // checking if user has already added his own server. if not then get default server
-	        String server_Url = preferences.getString(SettingsFragment.SERVER_URL_KEY,SettingsFragment.DEFAULT_SERVER_URL);
-	        server_Url = server_Url.equals("") ? SettingsFragment.DEFAULT_SERVER_URL : server_Url;
+            String server_Url = preferences.getString(SettingsFragment.SERVER_URL_KEY, SettingsFragment.DEFAULT_SERVER_URL);
+            server_Url = server_Url.equals("") ? SettingsFragment.DEFAULT_SERVER_URL : server_Url;
 
-	        // create a string request
-	        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_Url,
-	                this::showResponse, // method reference to showResponse. show response will call if request is successful
-	                error -> {
-	                    // if error while sending request
-	                    showResponse("Request to Server Failed. \nPlease check your connections");
-	                    Log.e("Volley error", "onErrorResponse: Please check your connections", error.getCause());
-	                }
-	            ) {
-	            @Override
-	            protected Map<String, String> getParams() throws AuthFailureError {
-	                // send params to server
-	                Map<String, String> params = new HashMap<>();
+            // create a string request
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, server_Url,
+                    this::showResponse, // method reference to showResponse. show response will call if request is successful
+                    error -> {
+                        // if error while sending request
+                        showResponse("Request to Server Failed. \nPlease check your connections");
+                        Log.e("Volley error", "onErrorResponse: Please check your connections", error.getCause());
+                    }
+            ) {
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    // send params to server
+                    Map<String, String> params = new HashMap<>();
 
-	                String data = getByteEncodedString(photoLocation);
-	                if (data.equals(Encoding_Error)) {
-	                    // error in encoding so do not send new params
-	                    return super.getParams();
-	                }
-	                params.put("encodedImage", data); // .put(Name, data)
-	                return params;
-	            }
-	        };
+                    String data = getByteEncodedString(photoLocation);
+                    if (data.equals(Encoding_Error)) {
+                        // error in encoding so do not send new params
+                        return super.getParams();
+                    }
+                    params.put("encodedImage", data); // .put(Name, data)
+                    return params;
+                }
+            };
 
-			stringRequest.setTag("description"); // add tag to stringRequest
-			stringRequest.setShouldCache(false); // set cache to false
-			requestQueue.add(stringRequest); // add stringRequest to false
+            stringRequest.setTag("description"); // add tag to stringRequest
+            stringRequest.setShouldCache(false); // set cache to false
+            requestQueue.add(stringRequest); // add stringRequest to false
 
-			// speak text when Image_button is pressed
-			ibPlayText.setOnClickListener(v -> {
-				tts.speak(resultText, TextToSpeech.QUEUE_FLUSH, null, null);
-			});
-		}
+            // speak text when Image_button is pressed
+            ibPlayText.setOnClickListener(v -> {
+                tts.speak(resultText, TextToSpeech.QUEUE_FLUSH, null, null);
+            });
+        }
     }
 
     private void showResponse(String responseText) {

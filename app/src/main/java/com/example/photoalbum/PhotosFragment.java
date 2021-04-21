@@ -3,12 +3,9 @@ package com.example.photoalbum;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 
 public class PhotosFragment extends Fragment implements PhotosAdapter.ItemClick {
     private static final String FOLDER_PATH = "folderPath";
@@ -27,15 +26,10 @@ public class PhotosFragment extends Fragment implements PhotosAdapter.ItemClick 
     private PhotosAdapter adapter;
     private RecyclerView recyclerView;
 
-    public interface Communicate {
-        ArrayList<String> getPathOfPhotos(String folderPath);
-        void onPhotoSelected(int pos,PhotoData selectedPhoto);
-    }
-
     public PhotosFragment() {
         // Required empty public constructor
     }
-    
+
     // factory method to generate new instance of Photo Fragment with photo loaded.
     // this has to be done because one fragment cannot communicate directly with another fragment.
     public static PhotosFragment newInstance(String folderPath) { // Factory Method
@@ -96,6 +90,12 @@ public class PhotosFragment extends Fragment implements PhotosAdapter.ItemClick 
 
     @Override
     public void onItemClicked(int pos) {
-        communicateWithMainActivity.onPhotoSelected(pos,photosObject.get(pos));
+        communicateWithMainActivity.onPhotoSelected(pos, photosObject.get(pos));
+    }
+
+    public interface Communicate {
+        ArrayList<String> getPathOfPhotos(String folderPath);
+
+        void onPhotoSelected(int pos, PhotoData selectedPhoto);
     }
 }

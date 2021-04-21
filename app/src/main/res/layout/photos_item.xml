@@ -22,6 +22,18 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:contentDescription="@string/alt_text"
-            android:src="@mipmap/ic_launcher"/>
+            android:src="@mipmap/ic_launcher"
+            android:background="@drawable/image_view_border"/>
+
+        <ImageView
+            android:id="@+id/iv_select_checkbox"
+            android:src="@drawable/ic_baseline_check_box_24"
+            android:layout_alignParentEnd="true"
+            android:contentDescription="@string/alt_text"
+            android:layout_height="20dp"
+            android:layout_width="20dp"
+            android:visibility="gone"
+            app:tint="@color/primary"
+            />
     </androidx.cardview.widget.CardView>
 </LinearLayout>

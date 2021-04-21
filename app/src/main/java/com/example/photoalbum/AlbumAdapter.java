@@ -9,13 +9,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.util.ArrayList;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> {
 
@@ -27,10 +27,6 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
         this.albums = albums;
         this.context = context;
         this.itemClicked = (ItemClicked) activity;
-    }
-
-    public interface ItemClicked {
-        void onItemClicked(int pos);
     }
 
     @NonNull
@@ -54,6 +50,10 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
     @Override
     public int getItemCount() {
         return albums.size();
+    }
+
+    public interface ItemClicked {
+        void onItemClicked(int pos);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

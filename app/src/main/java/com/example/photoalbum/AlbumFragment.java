@@ -7,8 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,21 +14,14 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+
 public class AlbumFragment extends Fragment implements AlbumAdapter.ItemClicked {
 
     private AlbumAdapter adapter;
     private RecyclerView recyclerView;
     private String[] uniquePaths;
     private Communicate communicateWithMainActivity;
-
-    // this interface is needed inorder to communicate wit its implementer
-    public interface Communicate {
-        String[] getUniquePaths();
-
-        String getThumbnail(String folderPath, String folderName);
-
-        void onAlbumSelected(int pos);
-    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -80,6 +71,15 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.ItemClicked 
     @Override
     public void onItemClicked(int pos) {
         communicateWithMainActivity.onAlbumSelected(pos);
+    }
+
+    // this interface is needed in order to communicate with its implementor
+    public interface Communicate {
+        String[] getUniquePaths();
+
+        String getThumbnail(String folderPath, String folderName);
+
+        void onAlbumSelected(int pos);
     }
 
 }
