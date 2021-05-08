@@ -56,7 +56,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     // show privacy policy dialog
                     AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
                     dialog.setTitle("Privacy Policy");
-                    dialog.setMessage("Information ......");
+                    dialog.setMessage("We use your personal data for training our AI model and improve the captions. Currently this policy is not implemented but soon we will change to this. Users will get the opt out option when this policy is implemented.");
                     dialog.setCancelable(true);
                     dialog.setNegativeButton("Ok", null);
                     dialog.show();
