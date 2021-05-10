@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
 
         if (savedInstanceState == null) { // to prevent calling this code if app is already loaded.
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AlbumFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_photo_album);
             previousPositionOnNavigationDrawer = navigationView.getCheckedItem();
         }
@@ -160,8 +159,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             // if already granted
             Log.d("Permission", "permissionManagement: permission Granted");
-            // index image
-            getAllImagesPath(this);
+            //call fragment
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AlbumFragment()).commit();
         }
     }
 
@@ -171,8 +170,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (requestCode == REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) { // if permission granted
                 Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
-                //index image
-                getAllImagesPath(this);
                 // Call fragment
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AlbumFragment()).commit();
                 navigationView.setCheckedItem(R.id.nav_photo_album);
